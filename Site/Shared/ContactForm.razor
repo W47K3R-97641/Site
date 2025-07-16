@@ -1,0 +1,40 @@
+﻿@using Blazorise
+
+<EditForm Model="@formModel" >
+    <Blazorise.ValidationSummary />
+	
+    <Field>
+        <Label>Name</Label>
+        <TextEdit @bind-Text="@formModel.Name" Required />
+    </Field>
+
+    <Field>
+        <Label>Email</Label>
+        <TextEdit @bind-Text="@formModel.Email" Type="TextInputType.Email" Required />
+    </Field>
+
+    <Field>
+        <Label>Message</Label>
+        <MemoEdit @bind-Text="@formModel.Message" Rows="5" Required />
+    </Field>
+
+    <Button Color="Color.Info" Type="ButtonType.Submit" Class="mt-3 w-100">Send Message</Button>
+</EditForm>
+
+@code {
+    private ContactFormModel formModel = new();
+
+    
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine($"Name: {formModel.Name}, Email: {formModel.Email}, Message: {formModel.Message}");
+        // TODO: Send to API or email service
+    }
+
+    private class ContactFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+}

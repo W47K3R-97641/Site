@@ -1,0 +1,65 @@
+﻿@page "/projects/{Id:int}"
+@inject Site.Services.Interfaces.IProjectService ProjectService
+
+<div id="project-details" class="container py-5">
+    @if (project == null)
+    {
+        <p class="text-center">Loading...</p>
+    }
+    else
+    {
+        <h2 class="project-details__title mb-4">@project.Name</h2>
+
+        @if (!string.IsNullOrEmpty(project.DemoLink))
+        {
+            <iframe class="project-details__iframe" src="@project.DemoLink" allowfullscreen></iframe>
+        }
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="project-details__section">
+                    <h5>Description</h5>
+                    <p>@project.Description</p>
+                </div>
+
+                <div class="project-details__section">
+                    <h5>Technologies Used</h5>
+                    <ul class="list-inline">
+                        @foreach (var skill in project.Skills)
+                        {
+                            <li class="list-inline-item badge bg-secondary me-2">@skill.Name</li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="project-details__section">
+                    <h5>Status</h5>
+                    <span class="badge bg-@(project.Completed ? "success" : "warning")">
+                        @(project.Completed ? "Completed" : "In Progress")
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                @if (!string.IsNullOrEmpty(project.GitHubLink))
+                {
+                    <a href="@project.GitHubLink" target="_blank" class="btn btn-dark w-100 mb-2">GitHub Repo</a>
+                }
+                @if (!string.IsNullOrEmpty(project.DemoLink))
+                {
+                    <a href="@project.DemoLink" target="_blank" class="btn btn-outline-info w-100">Live Demo</a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Project? project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await ProjectService.GetProjectByIdAsync(Id);
+    }
+}

@@ -1,0 +1,39 @@
+@inject Site.Services.Interfaces.IProjectService ProjectService
+@inject Site.Services.Interfaces.ISkillService SkillService
+
+<div class="skills-overview p-4">
+    <h3 class="skills-overview__title mb-4">Skills Overview</h3>
+
+    <div class="skills-overview__list">
+        @foreach (var skill in skillUsage)
+        {
+            <div class="skills-overview__card">
+                <div class="skills-overview__icon">
+                    <i class="oi oi-check"></i> <!-- You can replace this with a dynamic icon if needed -->
+                </div>
+                <div class="skills-overview__info">
+                    <span class="skills-overview__name">@skill.Key</span>
+                    <span class="skills-overview__count">@skill.Value project(s)</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, int> skillUsage = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var projects = await ProjectService.GetAllProjectsAsync();
+        var skills = await SkillService.GetAllSkillsAsync();
+
+        foreach (var skill in skills)
+        {
+            int count = projects.Count(p =>
+                p.Skills.Any(s => s.Name == skill.Name));
+
+            skillUsage[skill.Name] = count;
+        }
+    }
+}

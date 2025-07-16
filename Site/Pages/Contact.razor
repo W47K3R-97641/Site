@@ -1,0 +1,69 @@
+﻿@page "/contact"
+@using Blazorise
+
+<div class="contact-page d-flex flex-column align-items-center py-5 px-3">
+    <h2 class="text-walker mb-4">Contact Me</h2>
+
+    <div class="contact-grid d-flex flex-column flex-lg-row gap-5 w-100" style="max-width: 1100px;">
+
+        <!-- Contact Form -->
+        <div class="form-section flex-fill shadow p-4 rounded">
+            <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                <Blazorise.ValidationSummary />
+
+                <Field>
+                    <Label>Name</Label>
+                    <TextEdit @bind-Text="@formModel.Name" Required />
+                </Field>
+
+                <Field>
+                    <Label>Email</Label>
+                    <TextEdit @bind-Text="@formModel.Email" Type="TextInputType.Email" Required />
+                </Field>
+
+                <Field>
+                    <Label>Message</Label>
+                    <MemoEdit @bind-Text="@formModel.Message" Rows="5" Required />
+                </Field>
+
+                <Button Color="Color.Primary" Type="ButtonType.Submit" Class="mt-3 w-100">
+                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                </Button>
+            </EditForm>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="info-section flex-fill bg-dark border border-dark rounded p-4">
+            <h4 class="text-walker mb-3">Contact Info</h4>
+            <p><i class="fas fa-envelope me-2"></i><strong>Email:</strong> contact@example.com</p>
+            <p><i class="fas fa-map-marker-alt me-2"></i><strong>Location:</strong> Oran, Algeria</p>
+
+            <div class="mt-4">
+                <p class="mb-2"><strong>Follow me:</strong></p>
+                <div class="d-flex gap-4 fs-4">
+                    <a href="https://github.com/yourprofile" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/yourprofile" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private ContactFormModel formModel = new();
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine($"Name: {formModel.Name}, Email: {formModel.Email}, Message: {formModel.Message}");
+        // TODO: Implement actual message sending logic
+    }
+
+    private class ContactFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+}

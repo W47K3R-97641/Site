@@ -1,0 +1,76 @@
+﻿@using Blazorise
+@inject IJSRuntime JS
+
+<Bar Class="navbar-walker px-3 shadow-sm"
+     ThemeContrast="ThemeContrast.Dark"
+     Breakpoint="Breakpoint.Desktop">
+
+    <!-- Logo (Always visible) -->
+    <BarBrand Class="d-flex align-items-center me-auto">
+        <BarLink To="/">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+                 alt="Logo"
+                 style="height: 42px;" />
+        </BarLink>
+    </BarBrand>
+
+    <!-- Desktop Nav Links -->
+    <BarEnd Class="d-none d-md-flex gap-4 fs-5 align-items-center">
+        <BarItem>
+            <BarLink To="/" @onmouseover='() => AnimateText("nav-home")'>
+                <span id="nav-home">Home</span>
+            </BarLink>
+        </BarItem>
+        <BarItem>
+            <BarLink To="/projects" @onmouseover='() => AnimateText("nav-projects")'>
+                <span id="nav-projects">Projects</span>
+            </BarLink>
+        </BarItem>
+        <BarItem>
+            <BarLink To="/about" @onmouseover='() => AnimateText("nav-about")'>
+                <span id="nav-about">About</span>
+            </BarLink>
+        </BarItem>
+        <BarItem>
+            <BarLink To="/contact" @onmouseover='() => AnimateText("nav-contact")'>
+                <span id="nav-contact">Contact</span>
+            </BarLink>
+        </BarItem>
+    </BarEnd>
+
+    <!-- Mobile Toggler -->
+    <button class="menu-toggler d-md-none" @onclick="ToggleNavMenu">☰</button>
+</Bar>
+
+<!-- Fullscreen Mobile Overlay -->
+<div class="mobile-overlay" style="@(isNavMenuVisible ? "display: flex;" : "display: none;")">
+    <button class="close-btn" @onclick="ToggleNavMenu">✖</button>
+    <nav class="mobile-nav-links">
+        <a href="#/">
+            <span>Home</span>
+        </a>
+        <a href="#projects">
+            <span>Projects</span>
+        </a>
+        <a href="#about">
+            <span >About</span>
+        </a>
+        <a href="#contact">
+            <span>Contact</span>
+        </a>
+    </nav>
+</div>
+
+@code {
+    private bool isNavMenuVisible = false;
+
+    private void ToggleNavMenu()
+    {
+        isNavMenuVisible = !isNavMenuVisible;
+    }
+
+    private async Task AnimateText(string elementId)
+    {
+        await JS.InvokeVoidAsync("baffleInterop.scrambleThenReset", elementId);
+    }
+}

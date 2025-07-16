@@ -1,0 +1,75 @@
+﻿@page "/projects"
+@inject Site.Services.Interfaces.IProjectService ProjectService
+@inject Site.Services.Interfaces.ISkillService SkillService
+@inject IJSRuntime JS
+
+<div class="projects-container container py-5">
+    <h2 id="Projects-Head" class="mb-4 walker-accent">My Projects</h2>
+
+    <div class="filter-bar mb-4">
+        <label for="skillFilter" class="form-label text-light me-2">Filter by Skill:</label>
+        <select id="skillFilter" class="form-select skill-select" @onchange="OnFilterChanged">
+            <option value="">All Skills</option>
+            @foreach (var skill in skills)
+            {
+                <option value="@skill">@skill</option>
+            }
+        </select>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var proj in filteredProjects)
+        {
+            <div class="col-12 col-sm-6 col-md-4">
+                <ProjectCard Project="@proj" />
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Project> projects = new();
+    private List<Project> filteredProjects = new();
+    private List<string> skills = new();
+    private string selectedSkill = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = (await ProjectService.GetAllProjectsAsync()).ToList();
+        filteredProjects = new List<Project>(projects);
+
+        
+        // Get skill names only
+        var skillEntities = await SkillService.GetAllSkillsAsync();
+        skills = skillEntities
+            .Select(s => s.Name)
+            .Distinct()
+            .OrderBy(n => n)
+            .ToList();
+    }
+
+    private void OnFilterChanged(ChangeEventArgs e)
+    {
+        selectedSkill = e.Value?.ToString() ?? "";
+
+        if (string.IsNullOrWhiteSpace(selectedSkill))
+        {
+            filteredProjects = new(projects);
+        }
+        else
+        {
+            filteredProjects = projects
+                .Where(p => p.Skills.Any(s => s.Name == selectedSkill))
+                .ToList();
+        }
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("baffleInterop.infiniteScramble", "Projects-Head");
+        }
+    }
+}

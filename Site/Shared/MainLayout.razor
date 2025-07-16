@@ -1,19 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager NavigationManager
+
 <PageTitle>Site</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<Layout>
+    <LayoutHeader>
+        <TopNav />
+    </LayoutHeader>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+    <LayoutContent>
+        @Body
+    </LayoutContent>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    <LayoutFooter>
+       
+    </LayoutFooter>
+</Layout>
+
+
