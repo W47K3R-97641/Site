@@ -34,7 +34,9 @@
 
         scrambleCycle();
     },
-
+    X: function (email) {
+        console.log("Received email from Blazor:", email);
+    },
 
     scrambleThenReset: function (elementId) {
         const el = document.getElementById(elementId);

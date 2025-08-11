@@ -1,21 +1,27 @@
-﻿@using Blazorise
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject HttpClient HttpClient
+@inject SignInManager<ApplicationUser> SignInManager
+
 
 <Bar Class="navbar-walker px-3 shadow-sm"
-     ThemeContrast="ThemeContrast.Dark"
-     Breakpoint="Breakpoint.Desktop">
+ThemeContrast="ThemeContrast.Dark"
+Breakpoint="Breakpoint.Desktop">
 
     <!-- Logo (Always visible) -->
     <BarBrand Class="d-flex align-items-center me-auto">
         <BarLink To="/">
             <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-                 alt="Logo"
-                 style="height: 42px;" />
+            alt="Logo"
+            style="height: 42px;" />
         </BarLink>
     </BarBrand>
 
     <!-- Desktop Nav Links -->
     <BarEnd Class="d-none d-md-flex gap-4 fs-5 align-items-center">
+
         <BarItem>
             <BarLink To="/" @onmouseover='() => AnimateText("nav-home")'>
                 <span id="nav-home">Home</span>
@@ -36,6 +42,24 @@
                 <span id="nav-contact">Contact</span>
             </BarLink>
         </BarItem>
+
+       
+
+        <!-- 🔐 Show Logout for Logged-in Users -->
+        <AuthorizeView>
+            <Authorized>
+                <BarItem>
+                    <Button Color="Color.Danger"  Clicked="Logout">
+                        Logout
+                    </Button>
+                </BarItem>
+            </Authorized>
+            <NotAuthorized>
+                <BarItem>
+                    <BarLink To="/login">Login</BarLink>
+                </BarItem>
+            </NotAuthorized>
+        </AuthorizeView>
     </BarEnd>
 
     <!-- Mobile Toggler -->
@@ -46,18 +70,26 @@
 <div class="mobile-overlay" style="@(isNavMenuVisible ? "display: flex;" : "display: none;")">
     <button class="close-btn" @onclick="ToggleNavMenu">✖</button>
     <nav class="mobile-nav-links">
-        <a href="#/">
+        <a href="/">
             <span>Home</span>
         </a>
-        <a href="#projects">
+        <a href="/projects">
             <span>Projects</span>
         </a>
-        <a href="#about">
-            <span >About</span>
+        <a href="/about">
+            <span>About</span>
         </a>
-        <a href="#contact">
+        <a href="/contact">
             <span>Contact</span>
         </a>
+        <AuthorizeView>
+            <Authorized>
+                <button @onclick="Logout" class="btn btn-danger mt-3">Logout</button>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/login"><span>Login</span></a>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
 
@@ -69,8 +101,11 @@
         isNavMenuVisible = !isNavMenuVisible;
     }
 
-    private async Task AnimateText(string elementId)
+    private async Task AnimateText(string elementId) => await JS.InvokeVoidAsync("baffleInterop.scrambleThenReset", elementId);
+
+
+    private async Task Logout()
     {
-        await JS.InvokeVoidAsync("baffleInterop.scrambleThenReset", elementId);
+        Navigation.NavigateTo("/logout", forceLoad: true);
     }
 }

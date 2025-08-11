@@ -1,0 +1,88 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations;
+@using Microsoft.AspNetCore.Identity;
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+
+<h3>Register</h3>
+
+<EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+    <DataAnnotationsValidator />
+    <Blazorise.ValidationSummary />
+    <div>
+        <label>Username:</label>
+        <InputText @bind-Value="registerModel.Username" class="form-control" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="registerModel.Email" class="form-control" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
+    </div>
+
+    <div>
+        <label>Confirm Password:</label>
+        <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+    private RegisterModel registerModel = new();
+
+    private async Task HandleRegister()
+    {
+        await JS.InvokeVoidAsync("baffleInterop.X");
+        if (registerModel.Password != registerModel.ConfirmPassword)
+        {
+            // Handle error (can use a Toast or add field validation)
+            return;
+        }
+
+        var user = new ApplicationUser
+            {
+                UserName = registerModel.Username,
+                Email = registerModel.Email
+            };
+        var result = await UserManager.CreateAsync(user, registerModel.Password);
+
+        if (result.Succeeded)
+        {
+            await SignInManager.SignInAsync(user, isPersistent: false);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine(error.Description);
+            }
+        }
+    }
+
+    public class RegisterModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        
+        [Required]
+        [MinLength(3)]
+        public string Username { get; set; }
+        
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; }
+    }
+}

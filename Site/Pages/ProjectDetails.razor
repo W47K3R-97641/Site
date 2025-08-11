@@ -25,9 +25,9 @@
                 <div class="project-details__section">
                     <h5>Technologies Used</h5>
                     <ul class="list-inline">
-                        @foreach (var skill in project.Skills)
+                        @foreach (var skill in project.SkillNames)
                         {
-                            <li class="list-inline-item badge bg-secondary me-2">@skill.Name</li>
+                            <li class="list-inline-item badge bg-secondary me-2">@skill</li>
                         }
                     </ul>
                 </div>
@@ -56,7 +56,7 @@
 
 @code {
     [Parameter] public int Id { get; set; }
-    private Project? project;
+    private Dtos.DisplayProjectDto? project;
 
     protected override async Task OnInitializedAsync()
     {

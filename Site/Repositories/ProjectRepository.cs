@@ -2,6 +2,7 @@
 using Site.Entites;
 using Site.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Blazorise;
 
 namespace Site.Repositories
 {
@@ -14,31 +15,53 @@ namespace Site.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Project>> GetAllAsync()
+        public async Task<IEnumerable<Project>> GetAllAsync(bool includeSkill = false, bool tracking = false)
         {
-            return await _context.Projects.AsNoTracking()   
-                .Include(p => p.Skills) // Include related skills
-                .ToListAsync();
+            IQueryable<Project> query = _context.Projects;
+
+            if (includeSkill)
+            {
+                query = query.Include(p => p.Skills);
+            }
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.ToListAsync();
         }
 
-        public async Task<Project?> GetByIdAsync(int id)
+
+        public async Task<Project?> GetByIdAsync(int id, bool includeSkill = false, bool tracking = false)
         {
-            return await _context.Projects
-                .Include(p => p.Skills)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            IQueryable<Project> query = _context.Projects;
+
+            if (includeSkill)
+            {
+                query = query.Include(p => p.Skills);
+            }
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(p => p.Id == id);
         }
+
 
         public async Task AddAsync(Project project)
         {
             await _context.Projects.AddAsync(project);
         }
 
-        public async Task UpdateAsync(Project project)
+        public void Update(Project project)
         {
             _context.Projects.Update(project);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task Delete(int id)
         {
             var project = await GetByIdAsync(id);
             if (project is not null)

@@ -1,0 +1,84 @@
+﻿@page "/signin" // Or whatever path you want for your login form
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager // Still useful for redirects after form submit
+
+<h3>Login</h3>
+
+@*
+    Key Change: Instead of @OnValidSubmit, we use a standard HTML form
+    with action="YourLoginEndpoint" and method="post".
+    The action should point to the POST handler of your Identity login page.
+    For default Identity scaffolding, this is typically "/Identity/Account/Login".
+*@
+<form action="/Identity/Account/Login" method="post">
+    @* Add Antiforgery Token for security *@
+    <AntiforgeryToken />
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="loginModel.Email" class="form-control" />
+        @* Note: Validation using InputText here is for client-side feedback.
+           The server-side endpoint will also validate. *@
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText id="password" type="password" @bind-Value="loginModel.Password" class="form-control" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+
+    <div class="form-group form-check">
+        <InputCheckbox id="rememberMe" @bind-Value="loginModel.RememberMe" class="form-check-input" />
+        <label class="form-check-label" for="rememberMe">Remember me?</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log in</button>
+
+    @*
+        Error messages: When you redirect to this page after a failed login
+        from the Identity endpoint, errors are usually passed via TempData
+        or query parameters. You'll need logic here to display them.
+        For example, if the login endpoint redirects back with an "error" query string.
+    *@
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @errorMessage
+        </div>
+    }
+</form>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private string errorMessage = string.Empty;
+
+    // This method is no longer needed for direct login handling in Blazor
+    // private async Task HandleLogin() { ... }
+
+    protected override void OnInitialized()
+    {
+        // Example: Check for an error query parameter after redirect
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        if (query["error"] == "InvalidCredentials")
+        {
+            errorMessage = "Invalid login attempt.";
+        }
+        // You might have other error types here (e.g., "LockedOut", "NotAllowed")
+    }
+
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
+    }
+}

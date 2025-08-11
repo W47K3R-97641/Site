@@ -24,6 +24,10 @@ html, body {
     scroll-behavior: smooth;
 }
 
+main {
+    background: linear-gradient(160deg, #0a0a0a, #111827);
+}
+
 /* === Navbar === */
 .navbar-walker {
     background-color: var(--walker-bg);
@@ -120,8 +124,11 @@ html, body {
     align-items: center;
     padding: 3rem 1rem;
     text-align: center;
-    background: linear-gradient(160deg, #0a0a0a, #111827);
-    background-image: url('../heroback.png');
+    
+    background-image: url('../heroback.png') !important;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
     .hero-container h1 {
@@ -188,8 +195,8 @@ html, body {
 
 
 /* ProjectCard Component */
-main {
-    background: linear-gradient(160deg, #0a0a0a, #111827);
+.projects-container {
+    background-image: url('../loginpage.png') !important;
 }
 .projects-container h2 {
     color: var(--walker-accent);
@@ -362,3 +369,237 @@ main {
     line-height: 1.7;
     max-width: 680px;
 }
+
+.login-container {
+    max-width: 400px;
+    margin: 8vh auto;
+    padding: 2rem;
+    background-color: var(--walker-bg);
+    color: var(--walker-text);
+    border-radius: 12px;
+    box-shadow: 0 0 15px var(--walker-accent);
+}
+
+.text-walker {
+    color: var(--walker-accent);
+}
+
+
+/* Scoped selectors start with walker- to avoid conflicts */
+.walker-login-title {
+    color: var(--walker-accent);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.walker-login-form {
+    background-color: var(--walker-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--walker-border);
+    max-width: 400px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 12px rgba(0, 255, 229, 0.15);
+}
+
+.walker-input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+    .walker-input-group label {
+        color: var(--walker-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .walker-input-group input {
+        padding: 0.6rem;
+        border: 1px solid var(--walker-border);
+        border-radius: 6px;
+        background-color: #121212;
+        color: var(--walker-text);
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+        .walker-input-group input:focus {
+            border-color: var(--walker-accent);
+            outline: none;
+            box-shadow: 0 0 5px var(--walker-accent);
+        }
+
+.walker-checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    color: var(--walker-text);
+    font-size: 0.9rem;
+}
+
+    .walker-checkbox-group input {
+        margin-right: 0.5rem;
+    }
+
+.walker-btn {
+    width: 100%;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--walker-accent);
+    color: #000;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+    .walker-btn:hover {
+        background-color: var(--walker-accent-hover);
+    }
+
+    .walker-btn:active {
+        transform: scale(0.98);
+    }
+
+.pf-container {
+    background-color: var(--walker-bg);
+    color: var(--walker-text);
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem 2rem;
+    border: 1px solid var(--walker-border);
+    border-radius: 6px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pf-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.pf-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.pf-label {
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.pf-input,
+.pf-textarea {
+    background-color: #121212;
+    border: 1px solid var(--walker-border);
+    border-radius: 4px;
+    color: var(--walker-text);
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+    .pf-input:focus,
+    .pf-textarea:focus {
+        outline: none;
+        border-color: var(--walker-accent);
+        box-shadow: 0 0 6px var(--walker-accent);
+    }
+
+.pf-textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.pf-validation-message {
+    color: var(--walker-accent);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.pf-validation-summary {
+    border: 1px solid var(--walker-border);
+    background-color: #121212;
+    padding: 0.75rem 1rem;
+    color: var(--walker-accent);
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.pf-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pf-checkbox {
+    width: 18px;
+    height: 18px;
+}
+
+.pf-checkbox-label {
+    font-weight: 600;
+    user-select: none;
+}
+
+.pf-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.pf-skill-label {
+    display: flex;
+    align-items: center;
+    background-color: #121212;
+    border: 1px solid var(--walker-border);
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.pf-skill-checkbox {
+    margin-right: 0.4rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.pf-skill-label:hover {
+    background-color: var(--walker-accent-hover);
+    border-color: var(--walker-accent-hover);
+    color: var(--walker-bg);
+}
+
+.pf-submit {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--walker-accent);
+    color: var(--walker-bg);
+    border: none;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .pf-submit:disabled {
+        background-color: var(--walker-border);
+        cursor: not-allowed;
+    }
+
+    .pf-submit:not(:disabled):hover {
+        background-color: var(--walker-accent-hover);
+    }

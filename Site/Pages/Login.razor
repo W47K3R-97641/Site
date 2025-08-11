@@ -1,0 +1,25 @@
+﻿@page "/testlogin"
+
+<h3 class="walker-login-title">Login</h3>
+
+<form class="walker-login-form" method="post" action="/api/auth/login">
+    <div class="walker-input-group">
+        <label for="walker-email">Email</label>
+        <input id="walker-email" type="email" name="email" required />
+    </div>
+
+    <div class="walker-input-group">
+        <label for="walker-password">Password</label>
+        <input id="walker-password" type="password" name="password" required />
+    </div>
+
+    <div class="walker-checkbox-group">
+       
+        <label for="walker-remember">Remember Me</label>
+        <input type="hidden" name="rememberMe" value="false" />
+        <input type="checkbox" name="rememberMe" value="true" />
+    </div>
+
+    <button type="submit" class="walker-btn">Login</button>
+</form>
+

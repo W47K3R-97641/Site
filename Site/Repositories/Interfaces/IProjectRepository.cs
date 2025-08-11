@@ -4,11 +4,16 @@ namespace Site.Repositories.Interfaces
 {
     public interface IProjectRepository
     {
-        Task<IEnumerable<Project>> GetAllAsync();
-        Task<Project?> GetByIdAsync(int id);
+        Task<IEnumerable<Project>> GetAllAsync(bool includeSkill = false, bool tracking = false);
+
+        Task<Project?> GetByIdAsync(int id, bool includeSkill = false, bool tracking = false);
+
         Task AddAsync(Project project);
-        Task UpdateAsync(Project project);
-        Task DeleteAsync(int id);
+
+        void Update(Project project);
+
+        Task Delete(int id);
+
         Task SaveAsync();
     }
 }

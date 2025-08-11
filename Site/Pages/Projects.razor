@@ -24,6 +24,18 @@
                 <ProjectCard Project="@proj" />
             </div>
         }
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="card h-100 text-center d-flex justify-content-center align-items-center walker-add-project-card">
+                        <a class="btn btn-outline-success" href="/add-project">
+                            ➕ Add Project
+                        </a>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </div>
 
@@ -38,7 +50,7 @@
         projects = (await ProjectService.GetAllProjectsAsync()).ToList();
         filteredProjects = new List<Project>(projects);
 
-        
+
         // Get skill names only
         var skillEntities = await SkillService.GetAllSkillsAsync();
         skills = skillEntities
@@ -46,6 +58,8 @@
             .Distinct()
             .OrderBy(n => n)
             .ToList();
+
+       
     }
 
     private void OnFilterChanged(ChangeEventArgs e)

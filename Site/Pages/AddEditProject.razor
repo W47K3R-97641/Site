@@ -1,0 +1,188 @@
+﻿@page "/project-form/{ProjectID:int?}"
+
+@inject Site.Services.Interfaces.IProjectService ProjectService
+@inject Site.Services.Interfaces.ISkillService SkillService
+@inject NavigationManager Navigation
+
+<EditForm Model="ProjectDto" OnValidSubmit="HandleValidSubmit" EditContext="EditContext">
+    <DataAnnotationsValidator />
+    <Blazorise.ValidationSummary />
+
+    <h3>@(IsEditMode ? "Edit Project" : "Add New Project")</h3>
+
+    <div class="form-group">
+        <label for="name">Project Name</label>
+        <InputText id="name" class="form-control" @bind-Value="ProjectDto.Name" />
+        <ValidationMessage For="@(() => ProjectDto.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="ProjectDto.Description" />
+        <ValidationMessage For="@(() => ProjectDto.Description)" />
+    </div>
+
+    <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <InputText id="imageUrl" class="form-control" @bind-Value="ProjectDto.ImageUrl" />
+        <ValidationMessage For="@(() => ProjectDto.ImageUrl)" />
+    </div>
+
+    <div class="form-group">
+        <label for="demoLink">Demo Link (optional)</label>
+        <InputText id="demoLink" class="form-control" @bind-Value="ProjectDto.DemoLink" />
+        <ValidationMessage For="@(() => ProjectDto.DemoLink)" />
+    </div>
+
+    <div class="form-group">
+        <label for="gitHubLink">GitHub Link</label>
+        <InputText id="gitHubLink" class="form-control" @bind-Value="ProjectDto.GitHubLink" />
+        <ValidationMessage For="@(() => ProjectDto.GitHubLink)" />
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox id="completed" class="form-check-input" @bind-Value="ProjectDto.Completed" />
+        <label for="completed" class="form-check-label">Completed</label>
+    </div>
+
+    <fieldset class="mb-3">
+        <legend>Skills</legend>
+
+        @foreach (var skill in Skills)
+        {
+            <div class="form-check">
+                <input type="checkbox"
+                id="@($"skill_{skill.Id}")"
+                class="form-check-input"
+                @onchange="e => OnSkillChanged(e, skill.Id)"
+                checked="@ProjectDto.SkillIds.Contains(skill.Id)" />
+                <label for="@($"skill_{skill.Id}")" class="form-check-label">@skill.Name</label>
+            </div>
+        }
+
+        else
+        {
+        <p>Loading skills...</p>
+        }
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary" disabled="@(!EditContext.Validate())">
+        @(IsEditMode ? "Save Changes" : "Create Project")
+    </button>
+    <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    [Parameter] public int? ProjectID { get; set; }
+
+    private Dtos.CreateProjectDto ProjectDto = new();
+    private List<Site.Entites.Skill> Skills = new List<Site.Entites.Skill>();
+    private EditContext EditContext;
+
+    private bool IsEditMode => ProjectID.HasValue;
+   
+    protected override async Task OnInitializedAsync()
+    {
+
+        
+        Skills = await SkillService.GetAllSkillsAsync(); // from here error start
+
+        if (IsEditMode)
+        {
+            var project = await ProjectService.GetProjectByIdAsync(ProjectID.Value);
+            if (project is null)
+            {
+                // handle not found (redirect or show message)
+                Navigation.NavigateTo("/");
+                return;
+            }
+
+            // Map DisplayProjectDto back to CreateProjectDto for editing
+            ProjectDto = new Dtos.CreateProjectDto
+            {
+                Name = project.Name,
+                Description = project.Description,
+                ImageUrl = project.ImageUrl,
+                DemoLink = project.DemoLink,
+                GitHubLink = project.GitHubLink,
+                Completed = project.Completed,
+                SkillIds = project.SkillNames
+                                   .Select(name => Skills.FirstOrDefault(s => s.Name == name)?.Id ?? 0)
+                                   .Where(id => id != 0)
+                                   .ToList()
+            };
+        }
+        else
+        {
+            ProjectDto = new Dtos.CreateProjectDto();
+        }
+
+        EditContext = new EditContext(ProjectDto);
+    }
+
+    private void OnSkillChanged(ChangeEventArgs e, int skillId)
+    {
+        bool isChecked = (bool)e.Value;
+        if (isChecked)
+        {
+            if (!ProjectDto.SkillIds.Contains(skillId))
+                ProjectDto.SkillIds.Add(skillId);
+        }
+        else
+        {
+            if (ProjectDto.SkillIds.Contains(skillId))
+                ProjectDto.SkillIds.Remove(skillId);
+        }
+        EditContext.NotifyFieldChanged(FieldIdentifier.Create(() => ProjectDto.SkillIds));
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (IsEditMode)
+            {
+                // For update, you may need to get existing Project entity, map fields, and update
+                // Here, simplified by creating new Project entity for update
+
+                var projectEntity = new Site.Entites.Project
+                {
+                    // Ideally include the ID
+                    Id = ProjectID.Value,
+                    Name = ProjectDto.Name,
+                    Description = ProjectDto.Description,
+                    ImageUrl = ProjectDto.ImageUrl,
+                    DemoLink = ProjectDto.DemoLink,
+                    GitHubLink = ProjectDto.GitHubLink,
+                    Completed = ProjectDto.Completed,
+                    Skills = Skills.Where(s => ProjectDto.SkillIds.Contains(s.Id)).ToList(),
+                    // You might want to handle CreatedAt, UpdatedAt properly here
+                };
+
+                await ProjectService.UpdateProjectAsync(projectEntity);
+            }
+            else
+            {
+                await ProjectService.AddProjectAsync(ProjectDto);
+            }
+
+            Navigation.NavigateTo("/"); // or redirect to project list or details
+        }
+        catch (Site.CustomExceptions.SkillNotFoundException ex)
+        {
+            // handle missing skill error nicely, e.g. show validation message
+            // For now just a simple alert (you can improve with ValidationMessageStore)
+            Console.WriteLine($"Missing skill IDs: {string.Join(", ", ex.MissingSkillIds)}");
+        }
+        catch (Exception ex)
+        {
+            // Handle other errors
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

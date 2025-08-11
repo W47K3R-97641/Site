@@ -6,14 +6,19 @@
     <div class="project-card__body">
         <h5 class="project-card__title">@Project.Name</h5>
         <p class="project-card__desc">@Truncate(Project.Description, 100)</p>
-        <button class="project-card__button" @onclick="NavigateToDetails">View Details</button>
+        <button class="project-card__button" @onclick='() => Nav.NavigateTo($"/projects/{Project.Id}")'>View Details</button>
+        <AuthorizeView>
+            <Authorized>
+                <button class="project-card__button" @onclick='() => Nav.NavigateTo($"/project-form/{Project.Id}")'>Edit</button>
+            </Authorized>
+        </AuthorizeView>
+
     </div>
+
 </div>
 
 @code {
     [Parameter] public Project Project { get; set; } = new();
-
-    private void NavigateToDetails() => Nav.NavigateTo($"/projects/{Project.Id}");
 
     private string Truncate(string text, int length) =>
         string.IsNullOrWhiteSpace(text) ? "" : (text.Length <= length ? text : text[..length] + "...");
